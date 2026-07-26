@@ -7,7 +7,8 @@ let noEcpKey = false
 
 playButton.addEventListener("click", joinGame)
 
-const socket = new WebSocket("ws://localhost:9500")
+const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:"
+const socket = new WebSocket(`${wsProtocol}//${location.host}`)
 const id = crypto.randomUUID()
 let gameId
 
