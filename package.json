@@ -1,7 +1,16 @@
 {
+  "name": "starblast-duels",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
   "dependencies": {
     "express": "^5.2.1",
-    "nodemon": "^3.1.14",
     "ws": "^8.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

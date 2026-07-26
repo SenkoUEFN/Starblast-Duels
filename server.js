@@ -2,13 +2,13 @@ const express = require("express")
 const path = require("path")
 const WebSockets = require("ws")
 const app = express()
-const port = 9000
-const wsPort = 9500
+const port = process.env.PORT || 9000
+const wsPort = process.env.PORT || 9500
 let rooms = []
 let waitingList = []
 let waitingListServer = []
 
-app.listen(port, () =>
+const server = app.listen(port, () =>
 {
     console.log("server running on :", `http://localhost:${port}`)
 })
@@ -19,7 +19,7 @@ app.use(express.static(
 
 const wss = new WebSockets.WebSocketServer(
     {
-        port : wsPort
+        server : server
     }
 )
 
