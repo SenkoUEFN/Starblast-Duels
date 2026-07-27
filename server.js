@@ -1,12 +1,13 @@
 const express = require("express")
 const path = require("path")
 const WebSockets = require("ws")
+const { Room } = require("./rooms.js")
 const app = express()
 const port = process.env.PORT || 9000
-const wsPort = process.env.PORT || 9500
+
+let ecpKeys = ["07b59-c621c"]
 let rooms = []
 let waitingList = []
-let waitingListServer = []
 
 const server = app.listen(port, () =>
 {
@@ -43,33 +44,38 @@ wss.on("connection", (socket) =>
 
 function newPlayer(playerInfo, socket, ecpKey)
 {   
-    for(player of waitingList)
+    for(const player of waitingList)
     {
-        if(player.playerInfo.id === playerInfo.id)
+        if(player.playerClientInfo.id === playerInfo.id)
         {
             return
         }
     }
-    const dataServer = 
-    {
-        playerInfo : playerInfo,
-        socket : socket,
-        ecpKey : ecpKey
-    }
     const dataClient =
     {
-        playerInfo : playerInfo,
+        playerClientInfo : playerInfo,
+        ecpKey : ecpKey,
+        playerGameInfo : 
+        {
+            shipId : null,
+            laserShot : null,
+            laserTouched : null,
+            damagesPut : null,
+            damagesTaken : null
+
+        },
         socket : socket
     }
-    waitingListServer.push(dataServer)
     waitingList.push(dataClient)
-    for(player of waitingList)
-    {
-        console.log(player.playerInfo)
-    }
+    enoughPlayers()
+
+}
+
+function enoughPlayers()
+{
     if(waitingList.length >= 2)
     {
-        createRoom()
+        startNewRoom()
     }
     else
     {
@@ -77,116 +83,119 @@ function newPlayer(playerInfo, socket, ecpKey)
     }
 }
 
-async function createModdingGame(players)
+async function startNewRoom()
 {
-    let ecpKey
-    for(player of players)
+    let roomPlayers = []
+    const ecpPlayers = getEcpPlayersInWaiting()
+    const noEcpPlayers = getNoEcpPlayersInWaiting()
+    if(ecpPlayers.length > 0 && noEcpPlayers.length >0)
+    {
+        roomPlayers.push(ecpPlayers[0])
+        roomPlayers.push(noEcpPlayers[0])
+    }
+    else if(ecpPlayers.length >= 2 && noEcpPlayers.length === 0)
+    {
+        roomPlayers.push(ecpPlayers[0])
+        roomPlayers.push(ecpPlayers[1])
+    }
+    else if(ecpPlayers.length === 0 && noEcpPlayers.length >= 2)
+    {
+        roomPlayers.push(noEcpPlayers[0])
+        roomPlayers.push(noEcpPlayers[1])
+    }
+    else
+    {
+        return
+    }
+    const ecpKey = findEcpKey(roomPlayers)
+    if(ecpKey === null)
+    { 
+        noEcpKey()
+        return
+    }
+    const room = new Room(roomPlayers, ecpKey, (msg) =>
+    {
+        if(msg.name === "room_created")
+        {
+            
+            roomCreated(roomPlayers, msg.id)
+        }
+    })
+    const player1index = waitingList.findIndex(player => player === roomPlayers[0])
+    waitingList.splice(player1index, 1)
+    const player2index = waitingList.findIndex(player => player === roomPlayers[1])
+    waitingList.splice(player2index, 1)
+    rooms.push(room)
+    await room.createModdingGame()
+}
+
+
+
+function findEcpKey(players)
+{
+    for(const player of players)
     {
         if(player.ecpKey !== undefined)
         {
-            ecpKey = player.ecpKey
-            break
+            return player.ecpKey
         }
     }
-    if(ecpKey === undefined) { return "no ecp key" }
-    return new Promise((resolve, reject) =>
+    return null
+}
+
+function getEcpPlayersInWaiting()
+{
+    let ecpPlayers = []
+    for(let i = 0; i < waitingList.length; i++)
+    {
+        if(waitingList[i].ecpKey !== undefined)
+        {
+            ecpPlayers.push(waitingList[i])
+        }
+    }
+    return ecpPlayers
+}
+
+function getNoEcpPlayersInWaiting()
+{
+    let noEcpPlayers = []
+    for(let i = 0; i < waitingList.length; i++)
+    {
+        if(waitingList[i].ecpKey === undefined)
+        {
+            noEcpPlayers.push(waitingList[i])
+        }
+    }
+    return noEcpPlayers
+}
+
+function roomCreated(players, gameId)
+{
+    console.log(players.length)
+    for(player of players)
     {
         
-        const serverWsAdress = "wss://195-201-89-106.starblast.io:3009/"
-        let token
-        let roomData = {}
-        const tokenSocket = new WebSockets(
-            serverWsAdress,
+        player.socket.send(JSON.stringify(
             {
-                headers :
+                name : "room_created",
+                data : 
                 {
-                    Origin : "https://starblast.io"
+                    id : gameId
                 }
             }
-        )
-        tokenSocket.on("open", () =>
-        {
-            tokenSocket.send(JSON.stringify(
-                {
-                    name : "modding_token",
-                    data :
-                    {
-                        ecp_key : ecpKey
-                    }
-                }
-            ))
-        })
-        tokenSocket.on("message", (message) =>
-        {
-            let msg = JSON.parse(message)
-            console.log(msg)
-            if(msg.name === "token")
-            {
-                token = msg.data.token
-                createMod()
-            }
-            
-        })
-
-        function createMod(){    
-            const modSocket = new WebSockets(
-                serverWsAdress,
-                {
-                    headers : 
-                    {
-                        Origin : "https://starblast.data.neuronality.com"
-                    }
-                }
-            )
-
-            modSocket.on("open", () =>
-            {
-                console.log(token)
-                modSocket.send(JSON.stringify(
-                    {
-                        name : "run_mod",
-                        data : 
-                        {
-                            token : token,
-                            options :
-                            {
-                                root_mode: "survival",
-                                map_size : 30,
-                                starting_ship : 605,
-                                starting_ship_maxed : true,
-                                max_level : 6,
-                                max_players : 2,
-                                custom_map : ""
-                            }
-                        }
-                    }
-                ))
-            })
-
-            modSocket.on("message", (message) =>
-            {
-                let msg = JSON.parse(message)
-                if(msg.name === "tick" || msg.name === "ship_update") { return }
-                console.log(msg)
-                if(msg.name === "mod_started")
-                {
-                    roomData = 
-                    {
-                        id : msg.data.id,
-                        serverWsAdress : serverWsAdress,
-                        players : players
-                    }
-                    resolve(roomData)
-                }
-            })
-        }
-    })
-    
+        ))
+        console.log("room created sent")
+    }
 }
+
+
+
+
+
 
 function waitForPlayers(players)
 {
-    for(player of players)
+    for(const player of players)
     {
         player.socket.send(JSON.stringify(
             {
@@ -196,35 +205,12 @@ function waitForPlayers(players)
     }
 }
 
-async function createRoom()
+function noEcpKey(players)
 {
-    console.log("create Room")
-    const roomPlayers = [waitingList[0],waitingList[1]]
-    const roomPlayers2 = [waitingListServer[0],waitingListServer[1]]
-    waitingList.splice(0, 2)
-    const room = await createModdingGame(roomPlayers2)
-    if(room === "no ecp key")
-    {
-        for(player of roomPlayers)
-        {
-            player.socket.send(JSON.stringify(
-                {
-                    name : "no ecp key"
-                }
-            ))
-        }
-        return
-    }
-    for(player of roomPlayers)
-    {
-        player.socket.send(JSON.stringify(
-            {
-                name : "room_created",
-                data : room
-            }
-        ))
-    }
+
 }
+
+
 
 
 
