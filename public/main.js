@@ -50,8 +50,7 @@ function joinGame()
 
 function joinRoom()
 {
-    console.log("join room")
-    window.open(`https://starblast.io/#${gameId}@195.201.89.106:3009=${nameInput.value}`,"_blank")
+    window.open(`https://starblast.io/#${gameId}@195.201.89.106:3009`,"_blank")
     console.log(`https://starblast.io/#${gameId}@195.201.89.106:3009`)
 }
 
@@ -63,16 +62,6 @@ function showWaitForPlayers()
     title.style.display = "none"
     waitForPlayersText.style.display = "block"
 }
-
-function showGameInfo()
-{
-    playButton.style.display = "none"
-    nameInput.style.display = "none"
-    title.style.display = "none"
-    waitForPlayersText.style.display = "none"
-}
-
-// showGameInfo()
 
 
 
