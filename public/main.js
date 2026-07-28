@@ -2,6 +2,7 @@ const playButton = document.querySelector("#playButton")
 const nameInput = document.querySelector("#nameInput")
 const title = document.querySelector("#title")
 const waitForPlayersText = document.querySelector("#waitForPlayers")
+const divPlayerInfo = document.querySelector("#playersInfo")
 let waitForPlayers = false
 let noEcpKey = false
 
@@ -29,6 +30,10 @@ socket.addEventListener("message", (message) =>
         waitForPlayers = true
         showWaitForPlayers()
     }
+    else if(msg.name === "players_info")
+    {
+        updatePlayersInfo(msg.data)
+    }
 })
 
 function joinGame()
@@ -51,6 +56,7 @@ function joinGame()
 function joinRoom()
 {
     console.log("join room")
+    showGameInfo()
     window.open(`https://starblast.io/#${gameId}@195.201.89.106:3009=${nameInput.value}`,"_blank")
     console.log(`https://starblast.io/#${gameId}@195.201.89.106:3009`)
 }
@@ -66,13 +72,36 @@ function showWaitForPlayers()
 
 function showGameInfo()
 {
+    divPlayerInfo.style.display = "block"
     playButton.style.display = "none"
     nameInput.style.display = "none"
     title.style.display = "none"
     waitForPlayersText.style.display = "none"
+    
 }
 
-// showGameInfo()
+function updatePlayersInfo(players)
+{
+    let html = ""
+    for(const player of players)
+    {
+        let playerDiv = 
+        `<div>
+            <h2>${player.playerClientInfo.name}</h2> <br>
+            <div>Damages taken : ${player.playerGameInfo.damagesTaken}</div> <br>
+            <div>Laser touched : ${player.playerGameInfo.laserTouched}</div> <br>
+            <div> Life : ${player.playerGameInfo.life} </div> <br>
+            <div> Life regen : ${player.playerGameInfo.lifeRegen}</div>
+            <div> Kills : ${player.playerGameInfo.kills} </div> <br>
+            <div> Deaths : ${player.playerGameInfo.deaths}</div>
+        </div>`
+        html += playerDiv
+    }
+    divPlayerInfo.innerHTML = html
+}
+
+
+
 
 
 

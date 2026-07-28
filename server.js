@@ -57,11 +57,15 @@ function newPlayer(playerInfo, socket, ecpKey)
         ecpKey : ecpKey,
         playerGameInfo : 
         {
-            shipId : null,
-            laserShot : null,
-            laserTouched : null,
+            shipId : null, //cbon
+            laserShot : 0,
+            laserTouched : 0, //cbon
             damagesPut : null,
-            damagesTaken : null
+            damagesTaken : null, //cbon
+            life : null,//cbon
+            lifeRegen : null, //cbon
+            kills : 0,
+            deaths : 0
 
         },
         socket : socket
@@ -119,9 +123,19 @@ async function startNewRoom()
     }
     const room = new Room(roomPlayers, ecpKey, (msg) =>
     {
+        if(Array.isArray(msg))
+        {
+            for(const player of msg)
+            {
+                console.log(
+                    player.playerClientInfo,
+                    player.playerGameInfo
+                )
+            }
+        }
+
         if(msg.name === "room_created")
         {
-            
             roomCreated(roomPlayers, msg.id)
         }
     })
