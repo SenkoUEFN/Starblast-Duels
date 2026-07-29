@@ -24,8 +24,33 @@ const wss = new WebSockets.WebSocketServer(
     }
 )
 
+
+
+
+
 wss.on("connection", (socket) =>
 {
+    socket.on("close", () =>
+    {
+        for(const player of waitingList)
+        {
+            if(socket === player.socket)
+            {
+                const playerIndex = waitingList.indexOf(player)
+                waitingList.splice(playerIndex, 1)
+            }
+        }
+        for(const room of rooms)
+        {
+            for(const player of room.players)
+                if(socket === player.socket)
+                {
+                    room.stopRoom()
+                    const roomIndex = rooms.indexOf(room)
+                    rooms.splice(roomIndex, 1)
+                }
+        }
+    })
     socket.send(JSON.stringify(
         {
             name : "connected"

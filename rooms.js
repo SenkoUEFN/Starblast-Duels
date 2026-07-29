@@ -1,6 +1,7 @@
 const { Tracker } = require("./tracker.js")
 const WebSockets = require("ws")
-const StarblastModding = require("starblast-modding")
+const { BrowserClient} = require("starblast-modding")
+const path = require("path")
 
 class Room
 {
@@ -12,44 +13,44 @@ class Room
         this.game
     }
 
+    stopRoom()
+    {
+        if(this.mod)
+        {
+            this.mod.stop()
+            this.newTracker.killTracker()
+            this.onData("mod_stopped")
+        }
+    }
+
     async createModdingGame()
     {
         return new Promise((resolve, reject) =>
         {
-            this.game = new StarblastModding.Client(
-            {
-                cacheECPKey: false,
-                cacheEvents: false,
-                cacheOptions: false
-            })
-            this.game.setRegion("Europe")
-            this.game.setECPKey(this.ecpKey)
-            this.game.start(
+            this.mod = new BrowserClient(
                 {
-                    region : "Europe",
-                    ECPKey : this.ecpKey,
-                    options : 
-                    {
-                        root_mode: "survival",
-                        map_size : 20,
-                        radar_zoom : 4,
-                        starting_ship : 605,
-                        starting_ship_maxed : true,
-                        max_level : 6,
-                        max_players : 3,
-                        custom_map : "",
-                        lives : 5
-                    }
+                    cacheECPKey : false,
+                    cacheOptions : false
                 }
             )
 
+            this.mod.setRegion("Europe")
+            this.mod.setECPKey(this.ecpKey)
+            this.mod.loadCodeFromLocal(path.join(__dirname, "duelModeCode.js"),
+        {
+            watchChanges : false,
+            watchInterval : 50000,
+            executionTimeout : false
+        })
+            
+            this.mod.start()
+            this.game = this.mod.getNode()
+
             this.game.on("start", async (link, options) =>
             {
+                this.trackGameData(link)
                 let gameId = link.split("#")[1]
-                console.log(gameId)
                 gameId = gameId.split("@")[0]
-                console.log(link)
-                console.log(gameId)
                 this.onData(
                     {
                         name : "room_created",
@@ -57,17 +58,14 @@ class Room
                     }
                 )
                 resolve()
-                this.trackGameData(gameId)
             })
         })
     }
 
-    trackGameData(gameId)
+    trackGameData(gameLink)
     {
-        console.log("trackingGameData")
         let playerInGame = []
-        const wsUrl = "wss://195-201-89-106.starblast.io:3009/"
-        const newTracker = new Tracker(wsUrl, gameId, (msg) =>
+        this.newTracker = new Tracker(gameLink, (msg) =>
         {
             const array = Array.from(msg)
             if(array[0] === 0)

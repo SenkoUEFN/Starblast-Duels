@@ -1,15 +1,26 @@
 const WebSockets = require("ws")
+const { getGameFromId } = require("./findGame.js")
 
 class Tracker
 {
-    constructor(wsUrl, gameId, onData)
+    constructor(gameLink, onData)
     {
-        console.log("new tracker", wsUrl, gameId)
-        this.wsUrl = wsUrl
-        this.gameId = gameId
+
+        this.gameLink = gameLink
         this.onData = onData
+        this.onBegin()
+        
+    } 
+    
+    async onBegin()
+    {
+        this.gameInfo = await getGameFromId(this.gameLink)
+        this.wsUrl = this.gameInfo.wsUrl
+        console.log(this.wsUrl)
+        this.gameId = this.gameInfo.id
+
         this.socket = new WebSockets(
-            wsUrl,
+            this.wsUrl,
             {
                 headers : 
                 {
@@ -26,8 +37,7 @@ class Tracker
                 data : 
                 {
                     mode : "survival",
-                    spectate : false,
-                    spectate_ship : 1,
+                    spectate : true,
                     player_name : "tracking you 👀",
                     preferred : this.gameId
                 }
@@ -36,7 +46,7 @@ class Tracker
         })
         this.socket.on("close", (code, reason) =>
         {
-            console.log("close" + code + reason)
+            console.log("close", code, reason)
         })
 
         this.socket.on("error", (error) =>
@@ -71,16 +81,17 @@ class Tracker
                 }
                 ))
             }
-            else if(msg.name === "player_name")
-            {
-                this.onData(msg)
-            }
             
 
             
         })
+    }
 
-    }   
+    killTracker()
+    {
+        this.socket.removeAllListeners()
+        this.socket.close()
+    }
 }
 
 module.exports = { Tracker }
