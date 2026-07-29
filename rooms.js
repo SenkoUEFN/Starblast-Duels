@@ -80,7 +80,7 @@ class Room
                                 options :
                                 {
                                     root_mode: "survival",
-                                    map_size : 30,
+                                    map_size : 3,
                                     starting_ship : 605,
                                     starting_ship_maxed : true,
                                     max_level : 6,

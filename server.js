@@ -61,7 +61,7 @@ function newPlayer(playerInfo, socket, ecpKey)
             laserShot : 0,
             laserTouched : 0, //cbon
             damagesPut : null,
-            damagesTaken : null, //cbon
+            damagesTaken : 0, //cbon
             life : null,//cbon
             lifeRegen : null, //cbon
             kills : 0,
