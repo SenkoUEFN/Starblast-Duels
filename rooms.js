@@ -1,5 +1,6 @@
 const { Tracker } = require("./tracker.js")
 const WebSockets = require("ws")
+const StarblastModding = require("starblast-modding")
 
 class Room
 {
@@ -8,119 +9,56 @@ class Room
         this.players = players
         this.ecpKey = ecpKey
         this.onData = onData
+        this.game
     }
 
     async createModdingGame()
     {
         return new Promise((resolve, reject) =>
         {
-            const serverWsAdress = "wss://195-201-89-106.starblast.io:3009/"
-            let token
-            let roomData = {}
-            const tokenSocket = new WebSockets(
-                serverWsAdress,
+            this.game = new StarblastModding.Client(
+            {
+                cacheECPKey: false,
+                cacheEvents: false,
+                cacheOptions: false
+            })
+            this.game.setRegion("Europe")
+            this.game.setECPKey(this.ecpKey)
+            this.game.start(
                 {
-                    headers :
+                    region : "Europe",
+                    ECPKey : this.ecpKey,
+                    options : 
                     {
-                        Origin : "https://starblast.io"
+                        root_mode: "survival",
+                        map_size : 20,
+                        radar_zoom : 4,
+                        starting_ship : 605,
+                        starting_ship_maxed : true,
+                        max_level : 6,
+                        max_players : 3,
+                        custom_map : "",
+                        lives : 5
                     }
                 }
             )
-            tokenSocket.on("open", () =>
-            {
-                tokenSocket.send(JSON.stringify(
-                    {
-                        name : "modding_token",
-                        data :
-                        {
-                            ecp_key : this.ecpKey
-                        }
-                    }
-                ))
-            })
-            tokenSocket.on("message", (message) =>
-            {
-                let msg = JSON.parse(message)
-                console.log(msg)
-                if(msg.name === "token")
-                {
-                    token = msg.data.token
-                    createMod()
-                }
-                
-            })
 
-            tokenSocket.on("error", error =>
+            this.game.on("start", async (link, options) =>
             {
-                reject(error)
-            })
-
-            const createMod = () =>
-            {    
-                console.log("creating mod")
-                const modSocket = new WebSockets(
-                    serverWsAdress,
+                let gameId = link.split("#")[1]
+                console.log(gameId)
+                gameId = gameId.split("@")[0]
+                console.log(link)
+                console.log(gameId)
+                this.onData(
                     {
-                        headers : 
-                        {
-                            Origin : "https://starblast.data.neuronality.com"
-                        }
+                        name : "room_created",
+                        id : gameId
                     }
                 )
-
-                modSocket.on("open", () =>
-                {
-                    console.log(token)
-                    modSocket.send(JSON.stringify(
-                        {
-                            name : "run_mod",
-                            data : 
-                            {
-                                token : token,
-                                options :
-                                {
-                                    root_mode: "survival",
-                                    map_size : 3,
-                                    starting_ship : 605,
-                                    starting_ship_maxed : true,
-                                    max_level : 6,
-                                    max_players : 3,
-                                    custom_map : ""
-                                }
-                            }
-                        }
-                    ))
-                })
-
-                modSocket.on("message", (message) =>
-                {
-                    let msg = JSON.parse(message)
-                    if(msg.name === "tick" || msg.name === "ship_update") { return }
-                    // console.log(msg)
-                    if(msg.name === "mod_started")
-                    {
-                        roomData = 
-                        {
-                            id : msg.data.id,
-                            serverWsAdress : serverWsAdress,
-                            players : this.players
-                        }
-                        this.trackGameData(msg.data.id)
-                        this.onData(
-                            {
-                                name : "room_created",
-                                id : msg.data.id
-                            }
-                        )
-                        resolve(roomData)
-                    }
-                })
-
-                modSocket.on("error", error =>
-                {
-                    reject(error)
-                })
-            }
+                resolve()
+                this.trackGameData(gameId)
+            })
         })
     }
 

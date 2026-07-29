@@ -46,11 +46,13 @@ class Tracker
 
         this.socket.on("message", (message, isBinary) =>
         {
+
             this.onData(message)
             let msg
             try
             {
                 msg = JSON.parse(message.toString())
+                console.log(msg)
             }
             catch(error)
             {
