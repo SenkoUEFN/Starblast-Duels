@@ -57,6 +57,7 @@ function joinGame()
         return
     }
     const name = nameInput.value
+    localStorage.setItem("name", name)
 
     socket.send(JSON.stringify(
         {
@@ -162,6 +163,13 @@ function updatePlayersInfo(players)
     }
     divPlayerInfo.innerHTML = html
 }
+
+function setName()
+{
+    nameInput.value = localStorage.getItem("name")
+}
+
+setName()
 
 
 

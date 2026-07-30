@@ -160,14 +160,31 @@ class Room
 
     sendData()
     {
-        for(const player of this.players)
+        const publicPlayers = this.players.map(player => ({
+            playerClientInfo: {
+                id: player.playerClientInfo.id,
+                name: player.playerClientInfo.name
+            },
+
+            playerGameInfo: {
+                shipId: player.playerGameInfo.shipId,
+                damagesTaken: player.playerGameInfo.damagesTaken,
+                laserTouched: player.playerGameInfo.laserTouched,
+                life: player.playerGameInfo.life,
+                lifeRegen: player.playerGameInfo.lifeRegen,
+                kills: player.playerGameInfo.kills,
+                deaths: player.playerGameInfo.deaths
+            }
+        }))
+
+        for (const player of this.players)
         {
             player.socket.send(JSON.stringify(
                 {
                     name : "players_info",
-                    data : this.players
+                    data : publicPlayers
                 }
-            ))
+            )) 
         }
     }
 
