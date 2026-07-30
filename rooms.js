@@ -11,16 +11,32 @@ class Room
         this.ecpKey = ecpKey
         this.onData = onData
         this.game
+        this.spawningShipIdx = 0
+        this.gameId
     }
 
     stopRoom()
     {
+        if(this.sendDataInterval)
+        {
+            clearInterval(this.sendDataInterval)
+            this.dataInterval = null
+        }
         if(this.mod)
         {
             this.mod.stop()
             this.newTracker.killTracker()
             this.onData("mod_stopped")
         }
+    }
+
+    stopMod()
+    {
+        this.onData(
+            {
+                name : "stop_mod", 
+                room : this
+            })
     }
 
     async createModdingGame()
@@ -49,15 +65,58 @@ class Room
             this.game.on("start", async (link, options) =>
             {
                 this.trackGameData(link)
-                let gameId = link.split("#")[1]
-                gameId = gameId.split("@")[0]
-                this.onData(
-                    {
-                        name : "room_created",
-                        id : gameId
-                    }
+                this.gameId = link.split("#")[1]
+                this.gameId = this.gameId.split("@")[0]
+                console.log(this.gameId)
+                this.players[this.spawningShipIdx].socket.send(JSON.stringify(
+                {
+                    name : "room_created",
+                    data : this.gameId
+                })
+                )
+                this.players[this.spawningShipIdx+1].socket.send(JSON.stringify(
+                {
+                    name : "wait_other_one"
+                })
                 )
                 resolve()
+            })
+
+            this.game.on("shipSpawn", (ship) =>
+            {
+                console.log("ship :", ship)
+                if(this.spawningShipIdx >= this.players.length)
+                {
+                    return
+                }
+                this.players[this.spawningShipIdx].playerGameInfo.shipId = ship.id
+                this.spawningShipIdx += 1
+                if(this.spawningShipIdx < this.players.length)
+                {
+                    this.players[this.spawningShipIdx].socket.send(JSON.stringify(
+                    {
+                        name : "room_created",
+                        data : this.gameId
+                    })
+                    )
+                    
+                }
+
+                
+
+
+        
+
+            })
+
+            this.game.on("stop", () =>
+            {
+
+            })
+
+            this.game.on("error", () =>
+            {
+                
             })
         })
     }
@@ -72,30 +131,29 @@ class Room
             {
                 const data = this.parsePacket0(array)
                 this.writeData(data)
-                this.sendData()
+                if(!this.sendDataInterval)
+                {
+                    this.sendDataInterval = setInterval(() =>
+                    {
+                        this.sendData()
+                    }, 500)
+                }
+
             }
             else if(array[0] === 101)
             {
                 const data = this.parsePacket101(array)
                 this.writeData(data)
-                this.sendData()
             }
             else if(array[0] === 150)
             {
                 console.log("got 150")
                 const data = this.parsePacket150(array)
                 this.writeData(data)
-                this.sendData()
             }
             if(msg.name === "player_name")
             {
-                for(let i = 0; i < this.players.length; i++)
-                {
-                    if(this.players[i].playerClientInfo.name === msg.data.player_name)
-                    {
-                        this.players[i].playerGameInfo.shipId = msg.data.id
-                    }
-                }
+                this.onData(msg)
             }
         })
     }

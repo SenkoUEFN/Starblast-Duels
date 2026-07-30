@@ -9,7 +9,7 @@ class Tracker
         this.gameLink = gameLink
         this.onData = onData
         this.onBegin()
-        
+
     } 
     
     async onBegin()

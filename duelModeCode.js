@@ -67,7 +67,7 @@ let staticMemory = {
 
     afkChecker: {
         // * True = will check for AFK people
-        active: true,
+        active: false,
 
         // * Change the first number to reflect how many seconds until a player is pronounced AFK
         delay: 20 * 60 
@@ -257,7 +257,6 @@ if (HAS_BROWSER_DOM && typeof window.onerror !== "function" && staticMemory._GLO
         statusMessage("warn", `col: ${colno}, line: ${lineno}`);
     };
 }
-
 
 let SWEAR_WORD_LIST = [];
 const getRandomHex = () => Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');

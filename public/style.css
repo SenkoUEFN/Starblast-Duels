@@ -1,12 +1,17 @@
 :root {
     --black: #000;
+    --background: #050505;
+    --panel: #090909;
+
     --white: #fff;
     --gray: #a8a8a8;
 
     --blue: #6dcfff;
     --purple: #a77bff;
     --orange: #ff9c5a;
+    --red: #ff5c5c;
 }
+
 
 /* =========================
    RESET
@@ -23,6 +28,7 @@ body {
     width: 100%;
     min-height: 100%;
 }
+
 
 /* =========================
    PAGE
@@ -46,11 +52,24 @@ body {
     color: var(--white);
     font-family: Arial, Helvetica, sans-serif;
 
-    background: var(--black);
+    background:
+        linear-gradient(
+            rgba(255, 255, 255, 0.018) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.018) 1px,
+            transparent 1px
+        ),
+        var(--background);
+
+    background-size: 45px 45px;
 }
 
+
 /* =========================
-   GRANDES FORMES DU FOND
+   FORMES DU FOND
    ========================= */
 
 body::before {
@@ -60,7 +79,7 @@ body::before {
     z-index: -2;
 
     pointer-events: none;
-    will-change: transform, opacity;
+    opacity: 0.32;
 
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='xMidYMid slice'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='-170' y='55' width='770' height='365' rx='60' transform='rotate(-10 215 237)' stroke='%23ffffff' stroke-width='28' stroke-opacity='.23'/%3E%3Crect x='1080' y='-175' width='610' height='510' rx='75' transform='rotate(13 1385 80)' stroke='%23ffffff' stroke-width='34' stroke-opacity='.17'/%3E%3Ccircle cx='1380' cy='830' r='300' stroke='%23ffffff' stroke-width='30' stroke-opacity='.2'/%3E%3Ccircle cx='220' cy='770' r='145' stroke='%236dcfff' stroke-width='22' stroke-opacity='.27'/%3E%3Cpath d='M-120 725 H255 V620 H585 V495 H760' stroke='%23ffffff' stroke-width='28' stroke-opacity='.24'/%3E%3Cpath d='M785 65 H1030 V215 H1245' stroke='%23ffffff' stroke-width='24' stroke-opacity='.2'/%3E%3Cpath d='M650 950 V755 H815 V610' stroke='%23ffffff' stroke-width='26' stroke-opacity='.17'/%3E%3Cpath d='M1110 930 V770 H1220 V640 H1450' stroke='%23a77bff' stroke-width='23' stroke-opacity='.3'/%3E%3Cpath d='M45 500 C190 400 315 435 420 525 C515 608 620 605 720 535' stroke='%23ffffff' stroke-width='24' stroke-opacity='.17'/%3E%3Cpath d='M945 390 C1030 315 1145 325 1225 405 C1305 485 1400 490 1515 425' stroke='%23ff9c5a' stroke-width='22' stroke-opacity='.28'/%3E%3Cpath d='M300 -60 L420 80 L330 205' stroke='%236dcfff' stroke-width='24' stroke-opacity='.25'/%3E%3Cpath d='M1500 210 L1355 340 L1490 470' stroke='%23ffffff' stroke-width='26' stroke-opacity='.18'/%3E%3Cpath d='M870 810 L960 720 L1050 810 L960 900 Z' stroke='%23ffffff' stroke-width='21' stroke-opacity='.19'/%3E%3Cpath d='M520 250 L620 175 L720 250 L620 325 Z' stroke='%23a77bff' stroke-width='19' stroke-opacity='.25'/%3E%3Cpath d='M760 350 C815 290 880 290 935 350 C990 410 1055 410 1110 350' stroke='%236dcfff' stroke-width='18' stroke-opacity='.18'/%3E%3Cpath d='M40 120 H180 V240 H300' stroke='%23ff9c5a' stroke-width='18' stroke-opacity='.22'/%3E%3C/g%3E%3C/svg%3E");
 
@@ -68,11 +87,14 @@ body::before {
     background-position: center;
     background-size: cover;
 
-    animation: geometricMovement 18s ease-in-out infinite alternate;
+    filter: grayscale(0.65);
+
+    animation: geometricMovement 22s ease-in-out infinite alternate;
 }
 
+
 /* =========================
-   POINTS COLORÉS DU FOND
+   POINTS DU FOND
    ========================= */
 
 body::after {
@@ -82,7 +104,7 @@ body::after {
     z-index: -1;
 
     pointer-events: none;
-    will-change: transform, opacity, filter;
+    opacity: 0.5;
 
     background:
         radial-gradient(
@@ -93,153 +115,104 @@ body::after {
 
         radial-gradient(
             circle at 12% 24%,
-            rgba(109, 207, 255, 0.95) 0 2px,
+            rgba(109, 207, 255, 0.9) 0 2px,
             transparent 4px
         ),
 
         radial-gradient(
             circle at 18% 61%,
-            rgba(255, 156, 90, 0.85) 0 2px,
+            rgba(255, 156, 90, 0.75) 0 2px,
             transparent 4px
         ),
 
         radial-gradient(
             circle at 22% 82%,
-            rgba(255, 255, 255, 0.85) 0 1.5px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 27% 48%,
-            rgba(109, 207, 255, 0.7) 0 1px,
+            rgba(255, 255, 255, 0.8) 0 1.5px,
             transparent 3px
         ),
 
         radial-gradient(
             circle at 31% 13%,
-            rgba(255, 255, 255, 0.7) 0 1px,
+            rgba(255, 255, 255, 0.65) 0 1px,
             transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 35% 72%,
-            rgba(255, 156, 90, 0.7) 0 1.5px,
-            transparent 3.5px
         ),
 
         radial-gradient(
             circle at 39% 36%,
-            rgba(167, 123, 255, 0.95) 0 2.5px,
-            transparent 4.5px
-        ),
-
-        radial-gradient(
-            circle at 44% 89%,
-            rgba(255, 255, 255, 0.75) 0 1px,
-            transparent 3px
+            rgba(167, 123, 255, 0.85) 0 2px,
+            transparent 4px
         ),
 
         radial-gradient(
             circle at 48% 13%,
-            rgba(109, 207, 255, 0.85) 0 1.5px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 52% 44%,
-            rgba(167, 123, 255, 0.75) 0 1px,
+            rgba(109, 207, 255, 0.75) 0 1.5px,
             transparent 3px
         ),
 
         radial-gradient(
             circle at 55% 76%,
-            rgba(255, 156, 90, 0.9) 0 2px,
+            rgba(255, 156, 90, 0.8) 0 2px,
             transparent 4px
         ),
 
         radial-gradient(
-            circle at 61% 48%,
-            rgba(255, 255, 255, 0.7) 0 1px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 64% 91%,
-            rgba(109, 207, 255, 0.75) 0 1.5px,
-            transparent 3.5px
-        ),
-
-        radial-gradient(
             circle at 68% 19%,
-            rgba(255, 255, 255, 0.85) 0 1.5px,
+            rgba(255, 255, 255, 0.75) 0 1.5px,
             transparent 3px
         ),
 
         radial-gradient(
             circle at 73% 86%,
-            rgba(167, 123, 255, 0.9) 0 2px,
+            rgba(167, 123, 255, 0.8) 0 2px,
             transparent 4px
-        ),
-
-        radial-gradient(
-            circle at 76% 32%,
-            rgba(255, 156, 90, 0.75) 0 1px,
-            transparent 3px
         ),
 
         radial-gradient(
             circle at 81% 53%,
-            rgba(109, 207, 255, 0.95) 0 2.5px,
-            transparent 4.5px
-        ),
-
-        radial-gradient(
-            circle at 86% 72%,
-            rgba(255, 255, 255, 0.75) 0 1px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 91% 18%,
-            rgba(255, 156, 90, 0.85) 0 2px,
+            rgba(109, 207, 255, 0.85) 0 2px,
             transparent 4px
         ),
 
         radial-gradient(
-            circle at 93% 79%,
-            rgba(167, 123, 255, 0.9) 0 2px,
+            circle at 91% 18%,
+            rgba(255, 156, 90, 0.8) 0 2px,
             transparent 4px
         ),
 
         radial-gradient(
             circle at 96% 42%,
-            rgba(109, 207, 255, 0.75) 0 1.5px,
+            rgba(109, 207, 255, 0.7) 0 1.5px,
             transparent 3px
         );
 
-    animation:
-        backgroundPointsMovement 22s ease-in-out infinite alternate,
-        backgroundBlink 5s ease-in-out infinite alternate;
+    animation: backgroundPointsMovement 25s ease-in-out infinite alternate;
 }
 
-/* Les éléments restent au-dessus du fond */
+
+/* =========================
+   ÉLÉMENTS AU-DESSUS DU FOND
+   ========================= */
 
 #title,
 #nameInput,
 #playButton,
 #gameIframe,
-#waitForPlayers {
+#waitForPlayers,
+#noEcpKey,
+#waitingOtherPlayer,
+#gameInfoTitle,
+#joinTheGame,
+#playersInfo {
     position: relative;
     z-index: 1;
 }
 
+
 /* =========================
-   TITRE
+   TITRE PRINCIPAL
    ========================= */
 
 #title {
-    position: relative;
-
     margin-bottom: 18px;
     padding: 8px 26px 12px;
 
@@ -265,7 +238,8 @@ body::after {
     animation: titleMovement 4s ease-in-out infinite;
 }
 
-/* Traits latéraux du titre */
+
+/* Traits latéraux */
 
 #title::before,
 #title::after {
@@ -293,6 +267,7 @@ body::after {
     left: calc(100% + 22px);
 }
 
+
 /* =========================
    CHAMP DU NOM
    ========================= */
@@ -302,32 +277,29 @@ body::after {
     padding: 17px 22px;
 
     color: var(--white);
+
     font-size: 1.05rem;
     font-weight: 600;
     text-align: center;
 
     border: 2px solid rgba(255, 255, 255, 0.75);
-    border-radius: 14px;
+    border-radius: 12px;
     outline: none;
 
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.92);
 
     box-shadow:
         0 15px 40px rgba(0, 0, 0, 0.7),
         inset 0 0 15px rgba(255, 255, 255, 0.03);
 
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-
     transition:
         transform 0.2s ease,
         border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+        box-shadow 0.2s ease;
 }
 
 #nameInput::placeholder {
-    color: #888;
+    color: #777;
     font-weight: 400;
 }
 
@@ -339,12 +311,12 @@ body::after {
     transform: translateY(-2px);
 
     border-color: var(--white);
-    background: #050505;
 
     box-shadow:
-        0 0 0 4px rgba(255, 255, 255, 0.1),
+        0 0 0 4px rgba(255, 255, 255, 0.09),
         0 18px 45px rgba(0, 0, 0, 0.8);
 }
+
 
 /* =========================
    BOUTON PLAY
@@ -361,13 +333,14 @@ body::after {
     cursor: pointer;
 
     color: var(--black);
+
     font-size: 1.15rem;
     font-weight: 900;
     letter-spacing: 0.14em;
     text-transform: uppercase;
 
     border: 2px solid var(--white);
-    border-radius: 14px;
+    border-radius: 12px;
 
     background: var(--white);
 
@@ -408,7 +381,7 @@ body::after {
     color: var(--white);
     background: var(--black);
 
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-4px);
 
     box-shadow:
         0 18px 40px rgba(0, 0, 0, 0.85),
@@ -428,44 +401,280 @@ body::after {
     outline-offset: 5px;
 }
 
+
 /* =========================
-   MESSAGE D’ATTENTE
+   NOTIFICATIONS
    ========================= */
 
-#waitForPlayers {
-    padding: 20px 28px;
+#waitForPlayers,
+#waitingOtherPlayer,
+#joinTheGame,
+#noEcpKey {
+    --notification-color: var(--white);
+    --notification-code: "WAIT";
+
+    width: min(100%, 650px);
+    min-height: 92px;
+    padding: 23px 28px 23px 100px;
+
+    display: flex;
+    align-items: center;
 
     color: var(--white);
-    font-size: clamp(1.4rem, 5vw, 2.5rem);
+
+    font-size: clamp(1.05rem, 3vw, 1.45rem);
     font-weight: 800;
-    letter-spacing: 0.07em;
-    text-align: center;
+    line-height: 1.35;
+    letter-spacing: 0.045em;
+
+    text-align: left;
     text-transform: uppercase;
 
-    border: 2px solid var(--white);
-    border-radius: 16px;
+    border: 1px solid #3b3b3b;
+    border-left: 7px solid var(--notification-color);
 
-    background: rgba(0, 0, 0, 0.92);
+    background: #090909;
 
     box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.8),
-        0 0 25px rgba(255, 255, 255, 0.08);
+        10px 10px 0 rgba(0, 0, 0, 0.45);
 
-    animation: waitingPulse 1.6s ease-in-out infinite;
+    clip-path: polygon(
+        0 0,
+        calc(100% - 18px) 0,
+        100% 18px,
+        100% 100%,
+        18px 100%,
+        0 calc(100% - 18px)
+    );
 }
 
-#waitForPlayers::after {
-    content: "...";
-    display: inline-block;
 
-    width: 0;
-    overflow: hidden;
+/* Bloc à gauche */
 
-    vertical-align: bottom;
-    white-space: nowrap;
+#waitForPlayers::before,
+#waitingOtherPlayer::before,
+#joinTheGame::before,
+#noEcpKey::before {
+    content: var(--notification-code);
 
-    animation: loadingDots 1.4s steps(4, end) infinite;
+    position: absolute;
+    top: 50%;
+    left: 24px;
+
+    width: 52px;
+    height: 52px;
+
+    display: grid;
+    place-items: center;
+
+    color: #050505;
+
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+
+    background: var(--notification-color);
+
+    transform: translateY(-50%);
 }
+
+
+/* Ligne décorative */
+
+#waitForPlayers::after,
+#waitingOtherPlayer::after,
+#joinTheGame::after,
+#noEcpKey::after {
+    content: "";
+
+    position: absolute;
+    right: 24px;
+    bottom: 10px;
+
+    width: 58px;
+    height: 2px;
+
+    background: var(--notification-color);
+}
+
+
+/* Waiting for players */
+
+#waitForPlayers {
+    --notification-color: var(--white);
+    --notification-code: "WAIT";
+}
+
+
+/* Waiting for another player */
+
+#waitingOtherPlayer {
+    --notification-color: var(--blue);
+    --notification-code: "P2";
+}
+
+
+/* Join game */
+
+#joinTheGame {
+    --notification-color: var(--orange);
+    --notification-code: "JOIN";
+}
+
+
+/* Erreur ECP */
+
+#noEcpKey {
+    --notification-color: var(--red);
+    --notification-code: "ERR";
+}
+
+
+/* =========================
+   GAME INFO SIMPLE
+   ========================= */
+
+#gameInfoTitle {
+    width: min(100%, 900px);
+    margin: 0 0 4px;
+    padding: 0;
+
+    color: var(--white);
+
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+
+    text-align: left;
+    text-transform: none;
+
+    border: none;
+    text-shadow: none;
+}
+
+#gameInfoTitle::before,
+#gameInfoTitle::after {
+    display: none;
+}
+
+
+/* =========================
+   JOUEURS
+   ========================= */
+
+#playersInfo {
+    width: min(100%, 900px);
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+
+    color: var(--white);
+}
+
+
+/* =========================
+   CARTE JOUEUR SIMPLE
+   ========================= */
+
+#playersInfo > div {
+    min-width: 0;
+    padding: 20px;
+
+    border: 1px solid #333;
+    border-radius: 6px;
+
+    background: #0b0b0b;
+
+    box-shadow: none;
+
+    animation: none;
+    transition: none;
+}
+
+#playersInfo > div::before,
+#playersInfo > div::after {
+    display: none;
+}
+
+
+/* Différence discrète entre les joueurs */
+
+#playersInfo > div:first-child {
+    border-top: 3px solid var(--blue);
+}
+
+#playersInfo > div:nth-child(2) {
+    border-top: 3px solid var(--orange);
+}
+
+
+/* =========================
+   NOM DU JOUEUR
+   ========================= */
+
+#playersInfo h2 {
+    margin: 0 0 16px;
+    padding: 0 0 12px;
+
+    overflow-wrap: anywhere;
+
+    color: var(--white);
+
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+
+    text-align: left;
+    text-transform: none;
+
+    border-bottom: 1px solid #2d2d2d;
+
+    text-shadow: none;
+}
+
+
+/* =========================
+   STATISTIQUES
+   ========================= */
+
+#playersInfo > div > div {
+    min-height: auto;
+    margin: 0;
+    padding: 8px 0;
+
+    display: block;
+
+    color: #c9c9c9;
+
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.4;
+
+    border: none;
+    border-bottom: 1px solid #202020;
+
+    background: transparent;
+
+    box-shadow: none;
+
+    animation: none;
+    transition: none;
+}
+
+#playersInfo > div > div:last-child {
+    border-bottom: none;
+}
+
+#playersInfo > div > div::before {
+    display: none;
+}
+
+#playersInfo br {
+    display: none;
+}
+
 
 /* =========================
    IFRAME
@@ -476,7 +685,7 @@ body::after {
     height: min(82vh, 900px);
 
     border: 3px solid var(--white);
-    border-radius: 18px;
+    border-radius: 12px;
 
     background: var(--black);
 
@@ -484,6 +693,7 @@ body::after {
         0 25px 70px rgba(0, 0, 0, 0.85),
         0 0 30px rgba(255, 255, 255, 0.1);
 }
+
 
 /* =========================
    ANIMATIONS DU FOND
@@ -495,129 +705,66 @@ body::after {
             translate3d(-22px, 8px, 0)
             scale(1.025)
             rotate(-0.5deg);
-
-        opacity: 0.78;
     }
 
-    35% {
+    50% {
         transform:
-            translate3d(8px, -13px, 0)
-            scale(1.055)
+            translate3d(14px, -10px, 0)
+            scale(1.045)
             rotate(0.2deg);
-
-        opacity: 0.94;
-    }
-
-    70% {
-        transform:
-            translate3d(26px, 5px, 0)
-            scale(1.035)
-            rotate(0.55deg);
-
-        opacity: 1;
     }
 
     100% {
         transform:
-            translate3d(3px, 18px, 0)
-            scale(1.06)
+            translate3d(24px, 16px, 0)
+            scale(1.055)
             rotate(-0.15deg);
-
-        opacity: 0.85;
     }
 }
 
 @keyframes backgroundPointsMovement {
     0% {
         transform:
-            translate3d(-20px, 10px, 0)
+            translate3d(-15px, 8px, 0)
             scale(1);
-
-        filter: brightness(0.9);
-    }
-
-    50% {
-        transform:
-            translate3d(15px, -15px, 0)
-            scale(1.025);
-
-        filter: brightness(1.15);
     }
 
     100% {
         transform:
-            translate3d(28px, 8px, 0)
-            scale(1.01);
-
-        filter: brightness(1);
+            translate3d(22px, -10px, 0)
+            scale(1.02);
     }
 }
-
-@keyframes backgroundBlink {
-    0% {
-        opacity: 0.5;
-    }
-
-    50% {
-        opacity: 0.9;
-    }
-
-    100% {
-        opacity: 0.65;
-    }
-}
-
-/* =========================
-   ANIMATION DU TITRE
-   ========================= */
 
 @keyframes titleMovement {
     0%,
     100% {
         transform: translateY(0);
-        filter: brightness(0.9);
+        filter: brightness(0.92);
     }
 
     50% {
         transform: translateY(-3px);
-        filter: brightness(1.15);
+        filter: brightness(1.12);
     }
 }
+
 
 /* =========================
-   ANIMATION WAITING
+   TABLETTE
    ========================= */
 
-@keyframes waitingPulse {
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 0.75;
-
-        box-shadow:
-            0 20px 50px rgba(0, 0, 0, 0.8),
-            0 0 10px rgba(255, 255, 255, 0.05);
+@media (max-width: 800px) {
+    #playersInfo {
+        width: min(100%, 560px);
+        grid-template-columns: 1fr;
     }
 
-    50% {
-        transform: scale(1.025);
-        opacity: 1;
-
-        box-shadow:
-            0 20px 50px rgba(0, 0, 0, 0.8),
-            0 0 30px rgba(255, 255, 255, 0.22);
+    #gameInfoTitle {
+        width: min(100%, 560px);
     }
 }
 
-@keyframes loadingDots {
-    from {
-        width: 0;
-    }
-
-    to {
-        width: 1.5em;
-    }
-}
 
 /* =========================
    MOBILE
@@ -638,7 +785,6 @@ body::after {
 
     body::after {
         inset: -25%;
-        opacity: 0.75;
     }
 
     #title {
@@ -658,11 +804,72 @@ body::after {
         width: 100%;
     }
 
+    #waitForPlayers,
+    #waitingOtherPlayer,
+    #joinTheGame,
+    #noEcpKey {
+        min-height: 82px;
+        padding: 18px 15px 18px 75px;
+
+        font-size: 0.95rem;
+        letter-spacing: 0.025em;
+
+        clip-path: polygon(
+            0 0,
+            calc(100% - 12px) 0,
+            100% 12px,
+            100% 100%,
+            12px 100%,
+            0 calc(100% - 12px)
+        );
+    }
+
+    #waitForPlayers::before,
+    #waitingOtherPlayer::before,
+    #joinTheGame::before,
+    #noEcpKey::before {
+        left: 17px;
+
+        width: 42px;
+        height: 42px;
+
+        font-size: 0.6rem;
+    }
+
+    #waitForPlayers::after,
+    #waitingOtherPlayer::after,
+    #joinTheGame::after,
+    #noEcpKey::after {
+        right: 16px;
+        width: 40px;
+    }
+
+    #gameInfoTitle {
+        font-size: 1.4rem;
+    }
+
+    #playersInfo {
+        gap: 12px;
+    }
+
+    #playersInfo > div {
+        padding: 16px;
+    }
+
+    #playersInfo h2 {
+        font-size: 1.15rem;
+    }
+
+    #playersInfo > div > div {
+        font-size: 0.9rem;
+    }
+
     #gameIframe {
         height: 72vh;
-        border-radius: 12px;
+        border-radius: 8px;
     }
 }
+
 
 /* =========================
    ACCESSIBILITÉ

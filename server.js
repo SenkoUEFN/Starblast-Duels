@@ -119,6 +119,7 @@ function enoughPlayers()
 async function startNewRoom()
 {
     let roomPlayers = []
+    
     const ecpPlayers = getEcpPlayersInWaiting()
     const noEcpPlayers = getNoEcpPlayersInWaiting()
     if(ecpPlayers.length > 0 && noEcpPlayers.length >0)
@@ -159,9 +160,12 @@ async function startNewRoom()
             }
         }
 
-        if(msg.name === "room_created")
+
+        if(msg.name === "stop_mod")
         {
-            roomCreated(roomPlayers, msg.id)
+            const roomIdx = rooms.indexOf(msg.room)
+            msg.room.stopRoom()
+            rooms.slice(roomIdx,1)
         }
     })
     const player1index = waitingList.findIndex(player => player === roomPlayers[0])
@@ -229,11 +233,6 @@ function roomCreated(players, gameId)
     }
 }
 
-
-
-
-
-
 function waitForPlayers(players)
 {
     for(const player of players)
@@ -248,7 +247,10 @@ function waitForPlayers(players)
 
 function noEcpKey(players)
 {
-
+    for(player of players)
+    {
+        name : "no_ecp"
+    }
 }
 
 

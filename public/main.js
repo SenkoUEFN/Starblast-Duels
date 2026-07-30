@@ -3,6 +3,10 @@ const nameInput = document.querySelector("#nameInput")
 const title = document.querySelector("#title")
 const waitForPlayersText = document.querySelector("#waitForPlayers")
 const divPlayerInfo = document.querySelector("#playersInfo")
+const gameInfoTitle = document.querySelector("#gameInfoTitle")
+const noEcpText = document.querySelector("#noEcpKey")
+const waitingOtherPlayerText = document.querySelector("#waitingOtherPlayer")
+const joinTheGame = document.querySelector("#joinTheGame")
 let waitForPlayers = false
 let noEcpKey = false
 
@@ -19,7 +23,7 @@ socket.addEventListener("message", (message) =>
     console.log(msg)
     if(msg.name === "room_created")
     {
-        gameId = msg.data.id
+        gameId = msg.data
         waitForPlayers = false
         noEcpKey = false
         joinRoom()
@@ -33,11 +37,25 @@ socket.addEventListener("message", (message) =>
     else if(msg.name === "players_info")
     {
         updatePlayersInfo(msg.data)
+        showGameInfo()
+    }
+    else if(msg.name === "no_ecp")
+    {
+        showNoEcp()
+    }
+    else if(msg.name === "wait_other_one")
+    {
+        showWaitOtherPlayer()
     }
 })
 
 function joinGame()
 {
+    if (/^[A-Za-z0-9_]{3,16}$/.test(nameInput.value.trim()) === false)
+    {
+        alert("enter a good username please")
+        return
+    }
     const name = nameInput.value
 
     socket.send(JSON.stringify(
@@ -56,28 +74,73 @@ function joinGame()
 function joinRoom()
 {
     console.log("join room")
-    showGameInfo()
+    showJoinGame()
     window.open(`https://starblast.io/#${gameId}@195.201.89.106:3009=${nameInput.value}`,"_blank")
     console.log(`https://starblast.io/#${gameId}@195.201.89.106:3009`)
 }
 
-function showWaitForPlayers()
+function showJoinGame()
 {
-    console.log("wait players")
-    playButton.style.display = "none"
-    nameInput.style.display = "none"
-    title.style.display = "none"
-    waitForPlayersText.style.display = "block"
-}
-
-function showGameInfo()
-{
-    divPlayerInfo.style.display = "block"
+    joinTheGame.style.display = "block"
+    divPlayerInfo.style.display = "none"
     playButton.style.display = "none"
     nameInput.style.display = "none"
     title.style.display = "none"
     waitForPlayersText.style.display = "none"
-    
+    noEcpText.style.display = "none"
+    waitingOtherPlayerText.style.display = "none"
+    gameInfoTitle.style.display = "none"
+}
+
+function showWaitForPlayers()
+{
+    waitForPlayersText.style.display = "block"
+    divPlayerInfo.style.display = "none"
+    playButton.style.display = "none"
+    nameInput.style.display = "none"
+    title.style.display = "none"
+    noEcpText.style.display = "none"
+    waitingOtherPlayerText.style.display = "none"
+    joinTheGame.style.display = "none"
+}
+
+function showGameInfo()
+{
+    gameInfoTitle.style.display = "block"
+    divPlayerInfo.style.display = "grid"
+    playButton.style.display = "none"
+    nameInput.style.display = "none"
+    title.style.display = "none"
+    waitForPlayersText.style.display = "none"
+    noEcpText.style.display = "none"
+    waitingOtherPlayerText.style.display = "none"
+    joinTheGame.style.display = "none"
+}
+
+function showNoEcp()
+{
+    noEcpText.style.display = "block"
+    divPlayerInfo.style.display = "none"
+    playButton.style.display = "none"
+    nameInput.style.display = "none"
+    title.style.display = "none"
+    waitForPlayersText.style.display = "none"
+    waitingOtherPlayerText.style.display = "none"
+    joinTheGame.style.display = "none"
+    gameInfoTitle.style.display = "none"
+}
+
+function showWaitOtherPlayer()
+{
+    waitingOtherPlayerText.style.display = "block"
+    divPlayerInfo.style.display = "none"
+    playButton.style.display = "none"
+    nameInput.style.display = "none"
+    title.style.display = "none"
+    waitForPlayersText.style.display = "none"
+    noEcpText.style.display = "none"
+    joinTheGame.style.display = "none"
+    gameInfoTitle.style.display = "none"
 }
 
 function updatePlayersInfo(players)
@@ -87,7 +150,7 @@ function updatePlayersInfo(players)
     {
         let playerDiv = 
         `<div>
-            <h2>${player.playerClientInfo.name}</h2> <br>
+            <h2>Name : ${player.playerClientInfo.name}</h2> <br>
             <div>Damages taken : ${player.playerGameInfo.damagesTaken}</div> <br>
             <div>Laser touched : ${player.playerGameInfo.laserTouched}</div> <br>
             <div> Life : ${player.playerGameInfo.life} </div> <br>
@@ -99,9 +162,6 @@ function updatePlayersInfo(players)
     }
     divPlayerInfo.innerHTML = html
 }
-
-
-
 
 
 
