@@ -60,12 +60,59 @@ wss.on("connection", (socket) =>
     socket.on("message", (message) =>
     {
         let msg = JSON.parse(message)
+        console.log(msg)
         if(msg.name === "join_game")
         {
             newPlayer(msg.data, socket, msg.data.ecpKey)
         }  
+        else if(msg.name === "verify_ecp")
+        {
+            verifyEcp(msg, socket)
+        }
     })
 })
+
+function verifyEcp(msg, socket)
+{
+    const verifyEcpSocket = new WebSockets(
+        "wss://51-255-91-80.starblast.io:3015/",
+        {
+            headers :
+            {
+                Origin : "https://starblast.io"
+            }
+        }
+    )
+
+    verifyEcpSocket.on("open", () =>
+    {
+        console.log("socket opened")
+        verifyEcpSocket.send(JSON.stringify(
+            {
+                name : "verify_key",
+                data :
+                {
+                    key : msg.key
+                }
+            }
+        ))
+    })
+
+    verifyEcpSocket.on("message", (message) =>
+    {
+        let msg = JSON.parse(message)
+        if(msg.verified === "yes")
+        {
+            socket.send(JSON.stringify({name : "ecpVerified"}))
+            socket.close()
+        }
+        else if(msg.verified === "no")
+        {
+            socket.send(JSON.stringify({name : "ecpNotVerified"}))
+            socket.close()
+        }
+    })
+}
 
 function newPlayer(playerInfo, socket, ecpKey)
 {   

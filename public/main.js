@@ -7,15 +7,38 @@ const gameInfoTitle = document.querySelector("#gameInfoTitle")
 const noEcpText = document.querySelector("#noEcpKey")
 const waitingOtherPlayerText = document.querySelector("#waitingOtherPlayer")
 const joinTheGame = document.querySelector("#joinTheGame")
+const verifyEcpButton = document.querySelector("#verifyEcp")
+const ecpKeyInput = document.querySelector("#ecpInput")
 let waitForPlayers = false
 let noEcpKey = false
 
 playButton.addEventListener("click", joinGame)
 
+
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:"
 const socket = new WebSocket(`${wsProtocol}//${location.host}`)
 const id = crypto.randomUUID()
 let gameId
+
+socket.addEventListener("open", () =>
+{
+    verifyEcpButton.addEventListener("click", () =>
+    {
+        const ecpKey = ecpKeyInput.value.trim()
+
+        if (!/^[A-Za-z0-9]{5}-[A-Za-z0-9]{5}$/.test(ecpKey))
+        {
+            alert("Invalid ECP format")
+            return
+        }
+        socket.send(JSON.stringify(
+            {
+                name : "verify_ecp",
+                key : ecpKeyInput.value
+            }
+        ))
+    })
+})
 
 socket.addEventListener("message", (message) =>
 {
@@ -47,6 +70,15 @@ socket.addEventListener("message", (message) =>
     {
         showWaitOtherPlayer()
     }
+    else if(msg.name === "ecpVerified")
+    {
+        alert("ecp verified ! thank for your trust :)")
+        localStorage.setItem("ecpKey", ecpKeyInput.value)
+    }
+    else if(msg.name === "ecpNotVerified")
+    {
+        alert("your ecp is fake ! you think im dumb ?")
+    }
 })
 
 function joinGame()
@@ -66,7 +98,7 @@ function joinGame()
             {
                 id : id,
                 name : name,
-                ecpKey : localStorage.getItem("ECPKey")
+                ecpKey : localStorage.getItem("ecpKey")
             }
         }
     ))
@@ -91,6 +123,8 @@ function showJoinGame()
     noEcpText.style.display = "none"
     waitingOtherPlayerText.style.display = "none"
     gameInfoTitle.style.display = "none"
+    ecpKeyInput.style.display = "none"
+    verifyEcpButton.style.display = "none"
 }
 
 function showWaitForPlayers()
@@ -103,6 +137,8 @@ function showWaitForPlayers()
     noEcpText.style.display = "none"
     waitingOtherPlayerText.style.display = "none"
     joinTheGame.style.display = "none"
+    ecpKeyInput.style.display = "none"
+    verifyEcpButton.style.display = "none"
 }
 
 function showGameInfo()
@@ -116,6 +152,8 @@ function showGameInfo()
     noEcpText.style.display = "none"
     waitingOtherPlayerText.style.display = "none"
     joinTheGame.style.display = "none"
+    ecpKeyInput.style.display = "none"
+    verifyEcpButton.style.display = "none"
 }
 
 function showNoEcp()
@@ -129,6 +167,8 @@ function showNoEcp()
     waitingOtherPlayerText.style.display = "none"
     joinTheGame.style.display = "none"
     gameInfoTitle.style.display = "none"
+    ecpKeyInput.style.display = "none"
+    verifyEcpButton.style.display = "none"
 }
 
 function showWaitOtherPlayer()
@@ -142,6 +182,8 @@ function showWaitOtherPlayer()
     noEcpText.style.display = "none"
     joinTheGame.style.display = "none"
     gameInfoTitle.style.display = "none"
+    ecpKeyInput.style.display = "none"
+    verifyEcpButton.style.display = "none"
 }
 
 function updatePlayersInfo(players)
