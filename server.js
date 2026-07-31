@@ -90,7 +90,9 @@ function verifyEcp(msg, socket)
     {
         timeout = setTimeout(() =>
         {
-            if(verifyEcpSocket.OPEN === true)
+            if(
+                verifyEcpSocket.readyState === WebSockets.OPEN ||
+                verifyEcpSocket.readyState === WebSockets.CONNECTING)
             {
                 verifyEcpSocket.close()
             }
@@ -140,7 +142,6 @@ function verifyEcp(msg, socket)
         verifyEcpSocket.close()
     })
 
-    verifyEcpSocket.close()
 }
 
 function newPlayer(playerInfo, socket)
@@ -228,15 +229,16 @@ async function startNewRoom()
         {
             const roomIdx = rooms.indexOf(msg.room)
             msg.room.stopRoom()
-            rooms.slice(roomIdx,1)
+            rooms.splice(roomIdx,1)
         }
     })
+    rooms.push(room)
+    await room.createModdingGame()
     const player1index = waitingList.findIndex(player => player === roomPlayers[0])
     waitingList.splice(player1index, 1)
     const player2index = waitingList.findIndex(player => player === roomPlayers[1])
     waitingList.splice(player2index, 1)
-    await room.createModdingGame()
-    rooms.push(room)
+
 }
 
 
@@ -279,22 +281,7 @@ function getNoEcpPlayersInWaiting()
     return noEcpPlayers
 }
 
-function roomCreated(players, gameId)
-{
-    for(const player of players)
-    {
-        
-        player.socket.send(JSON.stringify(
-            {
-                name : "room_created",
-                data : 
-                {
-                    id : gameId
-                }
-            }
-        ))
-    }
-}
+
 
 function sendWaitForPlayers(socket)
 {

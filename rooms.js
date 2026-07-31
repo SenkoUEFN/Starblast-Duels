@@ -14,6 +14,7 @@ class Room
         this.onData = onData
         this.game
         this.gameId
+        this.link
     }
 
     async createModdingGame()
@@ -45,14 +46,17 @@ class Room
 
             this.game.on("start", async (link, options) =>
             {
-                this.trackGameData(link)
-                this.gameId = link.split("#")[1]
+                this.link = link
+                this.trackGameData(this.link)
+                
+                this.gameId = this.link.split("#")[1]
                 this.gameId = this.gameId.split("@")[0]
 
                 this.players[this.spawningShipIdx].socket.send(JSON.stringify(
                 {
                     name : "room_created",
-                    data : this.gameId
+                    data : this.gameId,
+                    link : this.link
                 })
                 )
                 this.players[this.spawningShipIdx+1].socket.send(JSON.stringify(
@@ -76,7 +80,8 @@ class Room
                     this.players[this.spawningShipIdx].socket.send(JSON.stringify(
                     {
                         name : "room_created",
-                        data : this.gameId
+                        data : this.gameId,
+                        link : this.link
                     })
                     )
                     
@@ -306,11 +311,15 @@ class Room
         if(this.sendDataInterval)
         {
             clearInterval(this.sendDataInterval)
-            this.dataInterval = null
+            this.sendDataInterval = null
         }
         if(this.mod)
         {
             this.mod.stop()
+        }
+        for(tracker of this.trackers)
+        {
+            tracker.killTracker()
         }
     }
 

@@ -57,7 +57,7 @@ socket.addEventListener("message", (message) =>
         gameId = msg.data
         waitForPlayers = false
         noEcpKey = false
-        joinRoom()
+        joinRoom(msg.link)
         
     }
     else if(msg.name === "wait for players")
@@ -112,12 +112,12 @@ function joinGame()
     ))
 }
 
-function joinRoom()
+function joinRoom(link)
 {
+    console.log(link)
     console.log("join room")
     showJoinGame()
-    window.open(`https://starblast.io/#${gameId}@195.201.89.106:3009=${nameInput.value}`,"_blank")
-    console.log(`https://starblast.io/#${gameId}@195.201.89.106:3009`)
+    window.open(link,"_blank")
 }
 
 function showJoinGame()
@@ -219,8 +219,17 @@ function setName()
     nameInput.value = localStorage.getItem("name")
 }
 
-setName()
+function enterEcpKey()
+{
+    const ecpKey = localStorage.getItem("ecpKey")
+    if(ecpKey !== null)
+    {
+        ecpKeyInput.value = ecpKey
+    }
+}
 
+setName()
+enterEcpKey()
 
 
 
