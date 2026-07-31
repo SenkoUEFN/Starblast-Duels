@@ -42,8 +42,16 @@ socket.addEventListener("open", () =>
 
 socket.addEventListener("message", (message) =>
 {
-    let msg = JSON.parse(message.data)
-    console.log(msg)
+    let msg
+    try
+    {
+        msg = JSON.parse(message.data)
+        console.log(msg)
+    }
+    catch(error)
+    {
+        return
+    }
     if(msg.name === "room_created")
     {
         gameId = msg.data
@@ -85,7 +93,7 @@ function joinGame()
 {
     if (/^[A-Za-z0-9_]{3,16}$/.test(nameInput.value.trim()) === false)
     {
-        alert("enter a good username please")
+        alert("enter a valid username please")
         return
     }
     const name = nameInput.value

@@ -1,5 +1,5 @@
-const { Tracker } = require("./tracker.js")
 const WebSockets = require("ws")
+const { Tracker } = require("./tracker.js")
 const { BrowserClient} = require("starblast-modding")
 const path = require("path")
 
@@ -7,36 +7,13 @@ class Room
 {
     constructor(players, ecpKey, onData)
     {
+        this.spawningShipIdx = 0
+        this.trackers = []
         this.players = players
         this.ecpKey = ecpKey
         this.onData = onData
         this.game
-        this.spawningShipIdx = 0
         this.gameId
-    }
-
-    stopRoom()
-    {
-        if(this.sendDataInterval)
-        {
-            clearInterval(this.sendDataInterval)
-            this.dataInterval = null
-        }
-        if(this.mod)
-        {
-            this.mod.stop()
-            this.newTracker.killTracker()
-            this.onData("mod_stopped")
-        }
-    }
-
-    stopMod()
-    {
-        this.onData(
-            {
-                name : "stop_mod", 
-                room : this
-            })
     }
 
     async createModdingGame()
@@ -49,16 +26,20 @@ class Room
                     cacheOptions : false
                 }
             )
-
             this.mod.setRegion("Europe")
+            if(this.ecpKey === null)
+            {
+                reject("no_ecp_key")
+            }
             this.mod.setECPKey(this.ecpKey)
-            this.mod.loadCodeFromLocal(path.join(__dirname, "duelModeCode.js"),
-        {
-            watchChanges : false,
-            watchInterval : 50000,
-            executionTimeout : false
-        })
-            
+            this.mod.loadCodeFromLocal(
+                path.join(__dirname, "duelModeCode.js"),
+                {
+                    watchChanges : false,
+                    watchInterval : 50000,
+                    executionTimeout : false
+                }
+            )
             this.mod.start()
             this.game = this.mod.getNode()
 
@@ -67,7 +48,7 @@ class Room
                 this.trackGameData(link)
                 this.gameId = link.split("#")[1]
                 this.gameId = this.gameId.split("@")[0]
-                console.log(this.gameId)
+
                 this.players[this.spawningShipIdx].socket.send(JSON.stringify(
                 {
                     name : "room_created",
@@ -84,7 +65,6 @@ class Room
 
             this.game.on("shipSpawn", (ship) =>
             {
-                console.log("ship :", ship)
                 if(this.spawningShipIdx >= this.players.length)
                 {
                     return
@@ -102,29 +82,33 @@ class Room
                     
                 }
 
-                
-
-
-        
-
             })
 
             this.game.on("stop", () =>
             {
-
+                this.stopMod()
             })
 
             this.game.on("error", () =>
             {
-                
+                this.stopMod()
+            })
+
+            this.game.on("shipDisconnect", () =>
+            {
+               this.stopMod() 
+            })
+
+            this.game.on("stop", () =>
+            {
+               this.stopMod() 
             })
         })
     }
 
     trackGameData(gameLink)
     {
-        let playerInGame = []
-        this.newTracker = new Tracker(gameLink, (msg) =>
+        this.trackers.push(new Tracker(gameLink, (msg) =>
         {
             const array = Array.from(msg)
             if(array[0] === 0)
@@ -138,7 +122,6 @@ class Room
                         this.sendData()
                     }, 500)
                 }
-
             }
             else if(array[0] === 101)
             {
@@ -147,21 +130,19 @@ class Room
             }
             else if(array[0] === 150)
             {
-                console.log("got 150")
                 const data = this.parsePacket150(array)
                 this.writeData(data)
             }
-            if(msg.name === "player_name")
-            {
-                this.onData(msg)
-            }
         })
+    )
     }
 
     sendData()
     {
-        const publicPlayers = this.players.map(player => ({
-            playerClientInfo: {
+        const publicPlayers = this.players.map(player => (
+        {
+            playerClientInfo: 
+            {
                 id: player.playerClientInfo.id,
                 name: player.playerClientInfo.name
             },
@@ -174,7 +155,7 @@ class Room
                 lifeRegen: player.playerGameInfo.lifeRegen,
                 kills: player.playerGameInfo.kills,
                 deaths: player.playerGameInfo.deaths
-            }
+        }
         }))
 
         for (const player of this.players)
@@ -318,6 +299,28 @@ class Room
             killer : bytes[2]
         }
         return killData
+    }
+
+    stopRoom()
+    {
+        if(this.sendDataInterval)
+        {
+            clearInterval(this.sendDataInterval)
+            this.dataInterval = null
+        }
+        if(this.mod)
+        {
+            this.mod.stop()
+        }
+    }
+
+    stopMod()
+    {
+        this.onData(
+            {
+                name : "stop_mod", 
+                room : this
+            })
     }
 }
 

@@ -5,13 +5,12 @@ const { Room } = require("./rooms.js")
 const app = express()
 const port = process.env.PORT || 9000
 
-let ecpKeys = ["07b59-c621c"]
 let rooms = []
 let waitingList = []
 
 const server = app.listen(port, () =>
 {
-    console.log("server running on :", `http://localhost:${port}`)
+    console.log(`http://localhost:${port}`)
 })
 
 app.use(express.static(
@@ -24,10 +23,6 @@ const wss = new WebSockets.WebSocketServer(
     }
 )
 
-
-
-
-
 wss.on("connection", (socket) =>
 {
     socket.on("close", () =>
@@ -38,6 +33,7 @@ wss.on("connection", (socket) =>
             {
                 const playerIndex = waitingList.indexOf(player)
                 waitingList.splice(playerIndex, 1)
+                break
             }
         }
         for(const room of rooms)
@@ -48,22 +44,27 @@ wss.on("connection", (socket) =>
                     room.stopRoom()
                     const roomIndex = rooms.indexOf(room)
                     rooms.splice(roomIndex, 1)
+                    break
                 }
         }
     })
-    socket.send(JSON.stringify(
-        {
-            name : "connected"
-        }
-    ))
 
     socket.on("message", (message) =>
     {
-        let msg = JSON.parse(message)
+        let msg
+        try
+        {
+            msg = JSON.parse(message)
+        }
+        catch(error)
+        {
+            return
+        }
+        console.log(message)
         console.log(msg)
         if(msg.name === "join_game")
         {
-            newPlayer(msg.data, socket, msg.data.ecpKey)
+            newPlayer(msg.data, socket)
         }  
         else if(msg.name === "verify_ecp")
         {
@@ -74,6 +75,7 @@ wss.on("connection", (socket) =>
 
 function verifyEcp(msg, socket)
 {
+    let timeout
     const verifyEcpSocket = new WebSockets(
         "wss://51-255-91-80.starblast.io:3015/",
         {
@@ -86,6 +88,13 @@ function verifyEcp(msg, socket)
 
     verifyEcpSocket.on("open", () =>
     {
+        timeout = setTimeout(() =>
+        {
+            if(verifyEcpSocket.OPEN === true)
+            {
+                verifyEcpSocket.close()
+            }
+        }, 10000)
         console.log("socket opened")
         verifyEcpSocket.send(JSON.stringify(
             {
@@ -100,21 +109,41 @@ function verifyEcp(msg, socket)
 
     verifyEcpSocket.on("message", (message) =>
     {
-        let msg = JSON.parse(message)
+        let msg 
+        try
+        {
+            msg = JSON.parse(message)
+        }
+        catch(error)
+        {
+            return
+        }
         if(msg.verified === "yes")
         {
             socket.send(JSON.stringify({name : "ecpVerified"}))
-            socket.close()
+            verifyEcpSocket.close()
         }
         else if(msg.verified === "no")
         {
             socket.send(JSON.stringify({name : "ecpNotVerified"}))
-            socket.close()
+            verifyEcpSocket.close()
         }
     })
+
+    verifyEcpSocket.on("error", () =>
+    {
+        verifyEcpSocket.close()
+    })
+
+    verifyEcpSocket.on("close", () =>
+    {
+        verifyEcpSocket.close()
+    })
+
+    verifyEcpSocket.close()
 }
 
-function newPlayer(playerInfo, socket, ecpKey)
+function newPlayer(playerInfo, socket)
 {   
     for(const player of waitingList)
     {
@@ -123,10 +152,11 @@ function newPlayer(playerInfo, socket, ecpKey)
             return
         }
     }
+
     const dataClient =
     {
         playerClientInfo : playerInfo,
-        ecpKey : ecpKey,
+        ecpKey : playerInfo.ecpKey,
         playerGameInfo : 
         {
             shipId : null, //cbon
@@ -136,22 +166,18 @@ function newPlayer(playerInfo, socket, ecpKey)
             damagesTaken : 0, //cbon
             life : null,//cbon
             lifeRegen : null, //cbon
-            kills : 0,
-            deaths : 0
+            kills : 0, //cbon
+            deaths : 0 //cbon
 
         },
         socket : socket
     }
     waitingList.push(dataClient)
-    for(player of waitingList)
-    {
-        console.log(player.playerClientInfo)
-    }
-    enoughPlayers()
+    enoughPlayers(dataClient.socket)
 
 }
 
-function enoughPlayers()
+function enoughPlayers(socket)
 {
     if(waitingList.length >= 2)
     {
@@ -159,11 +185,11 @@ function enoughPlayers()
     }
     else
     {
-        waitForPlayers(waitingList)
+        sendWaitForPlayers(socket)
     }
 }
 
-async function startNewRoom()
+function choosePlayersForRoom()
 {
     let roomPlayers = []
     
@@ -184,30 +210,20 @@ async function startNewRoom()
         roomPlayers.push(noEcpPlayers[0])
         roomPlayers.push(noEcpPlayers[1])
     }
-    else
-    {
-        return
-    }
+    return roomPlayers
+}
+
+async function startNewRoom()
+{
+    let roomPlayers = choosePlayersForRoom()
     const ecpKey = findEcpKey(roomPlayers)
     if(ecpKey === null)
     { 
-        noEcpKey()
+        noEcpKey(roomPlayers)
         return
     }
     const room = new Room(roomPlayers, ecpKey, (msg) =>
     {
-        if(Array.isArray(msg))
-        {
-            for(const player of msg)
-            {
-                console.log(
-                    player.playerClientInfo,
-                    player.playerGameInfo
-                )
-            }
-        }
-
-
         if(msg.name === "stop_mod")
         {
             const roomIdx = rooms.indexOf(msg.room)
@@ -219,8 +235,8 @@ async function startNewRoom()
     waitingList.splice(player1index, 1)
     const player2index = waitingList.findIndex(player => player === roomPlayers[1])
     waitingList.splice(player2index, 1)
-    rooms.push(room)
     await room.createModdingGame()
+    rooms.push(room)
 }
 
 
@@ -229,7 +245,7 @@ function findEcpKey(players)
 {
     for(const player of players)
     {
-        if(player.ecpKey !== undefined)
+        if(player.ecpKey !== null)
         {
             return player.ecpKey
         }
@@ -242,7 +258,7 @@ function getEcpPlayersInWaiting()
     let ecpPlayers = []
     for(let i = 0; i < waitingList.length; i++)
     {
-        if(waitingList[i].ecpKey !== undefined)
+        if(waitingList[i].ecpKey !== null)
         {
             ecpPlayers.push(waitingList[i])
         }
@@ -255,7 +271,7 @@ function getNoEcpPlayersInWaiting()
     let noEcpPlayers = []
     for(let i = 0; i < waitingList.length; i++)
     {
-        if(waitingList[i].ecpKey === undefined)
+        if(waitingList[i].ecpKey === null)
         {
             noEcpPlayers.push(waitingList[i])
         }
@@ -280,23 +296,25 @@ function roomCreated(players, gameId)
     }
 }
 
-function waitForPlayers(players)
+function sendWaitForPlayers(socket)
 {
-    for(const player of players)
-    {
-        player.socket.send(JSON.stringify(
-            {
-                name : "wait for players"
-            }
-        ))
-    }
+    socket.send(JSON.stringify(
+        {
+            name : "wait for players"
+        }
+    ))
 }
 
 function noEcpKey(players)
 {
     for(player of players)
     {
-        name : "no_ecp"
+        player.socket.send(JSON.stringify(
+            {
+                name : "no_ecp"
+            }
+        ))
+        
     }
 }
 
