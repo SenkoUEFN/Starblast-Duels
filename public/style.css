@@ -12,10 +12,7 @@
     --red: #ff5c5c;
 }
 
-
-/* =========================
-   RESET
-   ========================= */
+/* RESET */
 
 * {
     box-sizing: border-box;
@@ -34,17 +31,14 @@ input {
     font: inherit;
 }
 
-
-/* =========================
-   PAGE
-   ========================= */
+/* PAGE */
 
 body {
     position: relative;
     isolation: isolate;
 
     min-height: 100vh;
-    padding: 40px 20px 190px;
+    padding: 88px 20px 190px;
 
     display: flex;
     flex-direction: column;
@@ -58,24 +52,14 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 
     background:
-        linear-gradient(
-            rgba(255, 255, 255, 0.018) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0.018) 1px,
-            transparent 1px
-        ),
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
         var(--background);
 
     background-size: 45px 45px;
 }
 
-
-/* =========================
-   FORMES DU FOND
-   ========================= */
+/* FOND */
 
 body::before {
     content: "";
@@ -97,11 +81,6 @@ body::before {
     animation: geometricMovement 22s ease-in-out infinite alternate;
 }
 
-
-/* =========================
-   POINTS DU FOND
-   ========================= */
-
 body::after {
     content: "";
     position: fixed;
@@ -112,91 +91,20 @@ body::after {
     opacity: 0.5;
 
     background:
-        radial-gradient(
-            circle at 8% 18%,
-            rgba(255, 255, 255, 0.8) 0 1.5px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 12% 24%,
-            rgba(109, 207, 255, 0.9) 0 2px,
-            transparent 4px
-        ),
-
-        radial-gradient(
-            circle at 18% 61%,
-            rgba(255, 156, 90, 0.75) 0 2px,
-            transparent 4px
-        ),
-
-        radial-gradient(
-            circle at 22% 82%,
-            rgba(255, 255, 255, 0.8) 0 1.5px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 31% 13%,
-            rgba(255, 255, 255, 0.65) 0 1px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 39% 36%,
-            rgba(167, 123, 255, 0.85) 0 2px,
-            transparent 4px
-        ),
-
-        radial-gradient(
-            circle at 48% 13%,
-            rgba(109, 207, 255, 0.75) 0 1.5px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 55% 76%,
-            rgba(255, 156, 90, 0.8) 0 2px,
-            transparent 4px
-        ),
-
-        radial-gradient(
-            circle at 68% 19%,
-            rgba(255, 255, 255, 0.75) 0 1.5px,
-            transparent 3px
-        ),
-
-        radial-gradient(
-            circle at 73% 86%,
-            rgba(167, 123, 255, 0.8) 0 2px,
-            transparent 4px
-        ),
-
-        radial-gradient(
-            circle at 81% 53%,
-            rgba(109, 207, 255, 0.85) 0 2px,
-            transparent 4px
-        ),
-
-        radial-gradient(
-            circle at 91% 18%,
-            rgba(255, 156, 90, 0.8) 0 2px,
-            transparent 4px
-        ),
-
-        radial-gradient(
-            circle at 96% 42%,
-            rgba(109, 207, 255, 0.7) 0 1.5px,
-            transparent 3px
-        );
+        radial-gradient(circle at 8% 18%, rgba(255, 255, 255, 0.8) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 12% 24%, rgba(109, 207, 255, 0.9) 0 2px, transparent 4px),
+        radial-gradient(circle at 18% 61%, rgba(255, 156, 90, 0.75) 0 2px, transparent 4px),
+        radial-gradient(circle at 22% 82%, rgba(255, 255, 255, 0.8) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 39% 36%, rgba(167, 123, 255, 0.85) 0 2px, transparent 4px),
+        radial-gradient(circle at 55% 76%, rgba(255, 156, 90, 0.8) 0 2px, transparent 4px),
+        radial-gradient(circle at 73% 86%, rgba(167, 123, 255, 0.8) 0 2px, transparent 4px),
+        radial-gradient(circle at 81% 53%, rgba(109, 207, 255, 0.85) 0 2px, transparent 4px),
+        radial-gradient(circle at 91% 18%, rgba(255, 156, 90, 0.8) 0 2px, transparent 4px);
 
     animation: backgroundPointsMovement 25s ease-in-out infinite alternate;
 }
 
-
-/* =========================
-   ÉLÉMENTS AU-DESSUS DU FOND
-   ========================= */
+/* BASE Z-INDEX */
 
 #title,
 #nameInput,
@@ -210,15 +118,88 @@ body::after {
 #playersInfo,
 #ecpInput,
 #verifyEcp,
-#link {
+#link,
+#serverData {
     position: relative;
     z-index: 1;
 }
 
+/* SERVER DATA */
 
-/* =========================
-   LIENS EN HAUT À DROITE
-   ========================= */
+#serverData {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+
+    width: fit-content;
+    max-width: calc(100% - 24px);
+    padding: 8px 13px;
+
+    color: #f4f6fb;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+
+    background: rgba(9, 10, 15, 0.94);
+    border: 1px solid #2a2f3a;
+    border-radius: 7px;
+
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+#serverData > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#serverData h2 {
+    margin: 0;
+    border: none !important;
+
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+#serverData h2:first-child {
+    position: relative;
+    padding-left: 18px;
+}
+
+#serverData h2:first-child::before {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    top: 50%;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+    background: #20e070;
+
+    box-shadow: 0 0 10px rgba(32, 224, 112, 0.75);
+
+    transform: translateY(-50%);
+
+    animation: serverOnlineBlink 0.45s infinite alternate;
+}
+
+#serverData h2 + h2::before {
+    content: "•";
+
+    margin-right: 12px;
+
+    color: #4c5362;
+    font-weight: 900;
+}
+
+/* LIENS */
 
 #link {
     position: fixed;
@@ -276,10 +257,7 @@ body::after {
     outline-offset: 3px;
 }
 
-
-/* =========================
-   TITRE PRINCIPAL
-   ========================= */
+/* TITRE */
 
 #title {
     margin-bottom: 18px;
@@ -307,9 +285,6 @@ body::after {
     animation: titleMovement 4s ease-in-out infinite;
 }
 
-
-/* Traits latéraux */
-
 #title::before,
 #title::after {
     content: "";
@@ -336,10 +311,7 @@ body::after {
     left: calc(100% + 22px);
 }
 
-
-/* =========================
-   CHAMP DU NOM
-   ========================= */
+/* NAME INPUT */
 
 #nameInput {
     width: min(100%, 420px);
@@ -386,10 +358,7 @@ body::after {
         0 18px 45px rgba(0, 0, 0, 0.8);
 }
 
-
-/* =========================
-   BOUTON PLAY
-   ========================= */
+/* PLAY BUTTON */
 
 #playButton {
     position: relative;
@@ -470,25 +439,28 @@ body::after {
     outline-offset: 5px;
 }
 
-/* =========================
-   ECP EN BAS, CÔTE À CÔTE
-   ========================= */
+/* ECP EN BAS, GROUPE CENTRE */
 
 #ecpInput,
 #verifyEcp {
     position: fixed;
     bottom: 28px;
     z-index: 30;
+
+    height: 44px;
+
+    border-radius: 6px;
+    background: #080808;
+
+    box-shadow: none;
 }
 
-
-/* Input ECP */
+/* groupe total = 260 + 12 + 150 = 422px */
 
 #ecpInput {
-    left: calc(50% - 105px);
+    left: calc(50% - 211px);
 
     width: 260px;
-    height: 44px;
     padding: 0 14px;
 
     color: var(--white);
@@ -498,18 +470,7 @@ body::after {
     text-align: left;
 
     border: 1px solid #5a5a5a;
-    border-radius: 6px;
     outline: none;
-
-    background: #080808;
-
-    box-shadow: none;
-
-    transform: translateX(-50%);
-
-    transition:
-        border-color 0.2s ease,
-        background-color 0.2s ease;
 }
 
 #ecpInput::placeholder {
@@ -524,18 +485,12 @@ body::after {
 #ecpInput:focus {
     border-color: var(--orange);
     background: #0c0c0c;
-
-    box-shadow: none;
 }
 
-
-/* Bouton Verify */
-
 #verifyEcp {
-    left: calc(50% + 115px);
+    left: calc(50% + 61px);
 
     width: 150px;
-    height: 44px;
     padding: 0 18px;
 
     cursor: pointer;
@@ -548,18 +503,6 @@ body::after {
     text-transform: uppercase;
 
     border: 1px solid var(--orange);
-    border-radius: 6px;
-
-    background: #080808;
-
-    box-shadow: none;
-
-    transform: translateX(-50%);
-
-    transition:
-        color 0.2s ease,
-        background-color 0.2s ease,
-        border-color 0.2s ease;
 }
 
 #verifyEcp::before {
@@ -569,16 +512,11 @@ body::after {
 #verifyEcp:hover {
     color: var(--black);
     background: var(--orange);
-
-    transform: translateX(-50%);
-    box-shadow: none;
 }
 
 #verifyEcp:active {
     background: #e98a4c;
     border-color: #e98a4c;
-
-    transform: translateX(-50%);
 }
 
 #verifyEcp:focus-visible {
@@ -586,10 +524,7 @@ body::after {
     outline-offset: 3px;
 }
 
-
-/* =========================
-   NOTIFICATIONS
-   ========================= */
+/* NOTIFICATIONS */
 
 #waitForPlayers,
 #waitingOtherPlayer,
@@ -620,8 +555,7 @@ body::after {
 
     background: #090909;
 
-    box-shadow:
-        10px 10px 0 rgba(0, 0, 0, 0.45);
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.45);
 
     clip-path: polygon(
         0 0,
@@ -632,9 +566,6 @@ body::after {
         0 calc(100% - 18px)
     );
 }
-
-
-/* Bloc à gauche */
 
 #waitForPlayers::before,
 #waitingOtherPlayer::before,
@@ -663,9 +594,6 @@ body::after {
     transform: translateY(-50%);
 }
 
-
-/* Ligne décorative */
-
 #waitForPlayers::after,
 #waitingOtherPlayer::after,
 #joinTheGame::after,
@@ -682,42 +610,27 @@ body::after {
     background: var(--notification-color);
 }
 
-
-/* Waiting for players */
-
 #waitForPlayers {
     --notification-color: var(--white);
     --notification-code: "WAIT";
 }
-
-
-/* Waiting for another player */
 
 #waitingOtherPlayer {
     --notification-color: var(--blue);
     --notification-code: "P2";
 }
 
-
-/* Join game */
-
 #joinTheGame {
     --notification-color: var(--orange);
     --notification-code: "JOIN";
 }
-
-
-/* Erreur ECP */
 
 #noEcpKey {
     --notification-color: var(--red);
     --notification-code: "ERR";
 }
 
-
-/* =========================
-   GAME INFO SIMPLE
-   ========================= */
+/* GAME INFO */
 
 #gameInfoTitle {
     width: min(100%, 900px);
@@ -743,10 +656,7 @@ body::after {
     display: none;
 }
 
-
-/* =========================
-   JOUEURS
-   ========================= */
+/* PLAYERS */
 
 #playersInfo {
     width: min(100%, 900px);
@@ -757,11 +667,6 @@ body::after {
 
     color: var(--white);
 }
-
-
-/* =========================
-   CARTE JOUEUR SIMPLE
-   ========================= */
 
 #playersInfo > div {
     min-width: 0;
@@ -783,9 +688,6 @@ body::after {
     display: none;
 }
 
-
-/* Différence discrète entre les joueurs */
-
 #playersInfo > div:first-child {
     border-top: 3px solid var(--blue);
 }
@@ -793,11 +695,6 @@ body::after {
 #playersInfo > div:nth-child(2) {
     border-top: 3px solid var(--orange);
 }
-
-
-/* =========================
-   NOM DU JOUEUR
-   ========================= */
 
 #playersInfo h2 {
     margin: 0 0 16px;
@@ -818,11 +715,6 @@ body::after {
 
     text-shadow: none;
 }
-
-
-/* =========================
-   STATISTIQUES
-   ========================= */
 
 #playersInfo > div > div {
     min-height: auto;
@@ -860,10 +752,7 @@ body::after {
     display: none;
 }
 
-
-/* =========================
-   IFRAME
-   ========================= */
+/* IFRAME */
 
 #gameIframe {
     width: min(100%, 1600px);
@@ -879,45 +768,29 @@ body::after {
         0 0 30px rgba(255, 255, 255, 0.1);
 }
 
-
-/* =========================
-   ANIMATIONS DU FOND
-   ========================= */
+/* ANIMATIONS */
 
 @keyframes geometricMovement {
     0% {
-        transform:
-            translate3d(-22px, 8px, 0)
-            scale(1.025)
-            rotate(-0.5deg);
+        transform: translate3d(-22px, 8px, 0) scale(1.025) rotate(-0.5deg);
     }
 
     50% {
-        transform:
-            translate3d(14px, -10px, 0)
-            scale(1.045)
-            rotate(0.2deg);
+        transform: translate3d(14px, -10px, 0) scale(1.045) rotate(0.2deg);
     }
 
     100% {
-        transform:
-            translate3d(24px, 16px, 0)
-            scale(1.055)
-            rotate(-0.15deg);
+        transform: translate3d(24px, 16px, 0) scale(1.055) rotate(-0.15deg);
     }
 }
 
 @keyframes backgroundPointsMovement {
     0% {
-        transform:
-            translate3d(-15px, 8px, 0)
-            scale(1);
+        transform: translate3d(-15px, 8px, 0) scale(1);
     }
 
     100% {
-        transform:
-            translate3d(22px, -10px, 0)
-            scale(1.02);
+        transform: translate3d(22px, -10px, 0) scale(1.02);
     }
 }
 
@@ -934,12 +807,27 @@ body::after {
     }
 }
 
+@keyframes serverOnlineBlink {
+    from {
+        opacity: 0.35;
+        box-shadow: 0 0 4px rgba(32, 224, 112, 0.3);
+    }
 
-/* =========================
-   TABLETTE
-   ========================= */
+    to {
+        opacity: 1;
+        box-shadow:
+            0 0 9px rgba(32, 224, 112, 0.8),
+            0 0 18px rgba(32, 224, 112, 0.35);
+    }
+}
+
+/* TABLETTE */
 
 @media (max-width: 800px) {
+    body {
+        padding-top: 108px;
+    }
+
     #playersInfo {
         width: min(100%, 560px);
         grid-template-columns: 1fr;
@@ -950,23 +838,24 @@ body::after {
     }
 
     #link {
-        top: 12px;
+        top: 52px;
         right: 12px;
 
         max-width: calc(100% - 24px);
 
         flex-wrap: wrap;
     }
+
+    #serverData {
+        font-size: 0.8rem;
+    }
 }
 
-
-/* =========================
-   MOBILE
-   ========================= */
+/* MOBILE */
 
 @media (max-width: 600px) {
     body {
-        padding: 105px 16px 175px;
+        padding: 128px 16px 120px;
         gap: 18px;
     }
 
@@ -981,8 +870,42 @@ body::after {
         inset: -25%;
     }
 
+    #serverData {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+
+        width: auto;
+        padding: 7px 10px;
+
+        font-size: 0.72rem;
+    }
+
+    #serverData > div {
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    #serverData > div::-webkit-scrollbar {
+        display: none;
+    }
+
+    #serverData h2:first-child {
+        padding-left: 16px;
+    }
+
+    #serverData h2:first-child::before {
+        width: 8px;
+        height: 8px;
+    }
+
+    #serverData h2 + h2::before {
+        margin-right: 8px;
+    }
+
     #link {
-        top: 10px;
+        top: 44px;
         right: 10px;
         left: 10px;
 
@@ -1016,7 +939,8 @@ body::after {
     #playButton {
         width: 100%;
     }
-    
+
+    #ecpInput,
     #verifyEcp {
         bottom: 20px;
         height: 42px;
@@ -1024,7 +948,12 @@ body::after {
 
     #ecpInput {
         left: 16px;
-        width: calc(100% - 132px);
+
+        width: calc(100% - 140px);
+        padding: 0 12px;
+
+        font-size: 0.82rem;
+
         transform: none;
     }
 
@@ -1032,10 +961,11 @@ body::after {
         right: 16px;
         left: auto;
 
-        width: 108px;
-        padding: 0 10px;
+        width: 112px;
+        padding: 0 8px;
 
-        font-size: 0.75rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.05em;
 
         transform: none;
     }
@@ -1111,10 +1041,7 @@ body::after {
     }
 }
 
-
-/* =========================
-   ACCESSIBILITÉ
-   ========================= */
+/* ACCESSIBILITE */
 
 @media (prefers-reduced-motion: reduce) {
     *,

@@ -25,8 +25,14 @@ const wss = new WebSockets.WebSocketServer(
 
 wss.on("connection", (socket) =>
 {
+    const serverDataInterval = setInterval(() =>
+    {
+        sendServerData(socket)
+    }, 1000)
+
     socket.on("close", () =>
     {
+        clearInterval(serverDataInterval)
         for(const player of waitingList)
         {
             if(socket === player.socket)
@@ -97,6 +103,7 @@ function verifyEcp(msg, socket)
                 verifyEcpSocket.close()
             }
         }, 10000)
+
         console.log("socket opened")
         verifyEcpSocket.send(JSON.stringify(
             {
@@ -299,6 +306,29 @@ function noEcpKey(players)
         ))
         
     }
+}
+
+function sendServerData(socket)
+{
+    socket.send(JSON.stringify(
+        {
+            name : "server_data",
+            roomCount : rooms.length,
+            playerCount : getPlayersCount(),
+            playersWaiting : waitingList.length
+        }
+    ))
+}
+
+
+function getPlayersCount()
+{
+    let count = 0
+    for(room of rooms)
+    {
+        count += room.players.length
+    }
+    return count
 }
 
 

@@ -9,6 +9,7 @@ const waitingOtherPlayerText = document.querySelector("#waitingOtherPlayer")
 const joinTheGame = document.querySelector("#joinTheGame")
 const verifyEcpButton = document.querySelector("#verifyEcp")
 const ecpKeyInput = document.querySelector("#ecpInput")
+const divserverData = document.querySelector("#serverData")
 let waitForPlayers = false
 let noEcpKey = false
 
@@ -86,6 +87,10 @@ socket.addEventListener("message", (message) =>
     else if(msg.name === "ecpNotVerified")
     {
         alert("your ecp is fake ! you think im dumb ?")
+    }
+    else if(msg.name === "server_data")
+    {
+        setServerInfo(msg)
     }
 })
 
@@ -212,6 +217,18 @@ function updatePlayersInfo(players)
         html += playerDiv
     }
     divPlayerInfo.innerHTML = html
+}
+
+function setServerInfo(msg)
+{
+    divserverData.innerHTML =
+    `
+    <div>
+        <h2>${msg.roomCount} Games</h2>
+        <h2>${msg.playerCount} Playing</h2>
+        <h2>${msg.playersWaiting} Queue</h2>
+    </div>
+    `
 }
 
 function setName()

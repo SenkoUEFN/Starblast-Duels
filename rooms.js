@@ -317,7 +317,7 @@ class Room
         {
             this.mod.stop()
         }
-        for(tracker of this.trackers)
+        for(const tracker of this.trackers)
         {
             tracker.killTracker()
         }
