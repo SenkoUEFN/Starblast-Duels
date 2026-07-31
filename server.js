@@ -137,10 +137,6 @@ function verifyEcp(msg, socket)
         verifyEcpSocket.close()
     })
 
-    verifyEcpSocket.on("close", () =>
-    {
-        verifyEcpSocket.close()
-    })
 
 }
 

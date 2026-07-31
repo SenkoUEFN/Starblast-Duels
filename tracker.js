@@ -5,18 +5,15 @@ class Tracker
 {
     constructor(gameLink, onData)
     {
-
         this.gameLink = gameLink
         this.onData = onData
         this.onBegin()
-
     } 
     
     async onBegin()
     {
         this.gameInfo = await getGameFromId(this.gameLink)
         this.wsUrl = this.gameInfo.wsUrl
-        console.log(this.wsUrl)
         this.gameId = this.gameInfo.id
 
         this.socket = new WebSockets(
@@ -46,17 +43,16 @@ class Tracker
         })
         this.socket.on("close", (code, reason) =>
         {
-            console.log("close", code, reason)
+            this.socket.close()
         })
 
         this.socket.on("error", (error) =>
         {
-            console.log(error)
+            this.socket.close()
         })
 
         this.socket.on("message", (message, isBinary) =>
         {
-
             this.onData(message)
             let msg
             try
@@ -81,9 +77,6 @@ class Tracker
                 }
                 ))
             }
-            
-
-            
         })
     }
 
